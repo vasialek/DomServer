@@ -52,6 +52,8 @@ void printHeartBeat()
 
   static bool isLedOn = false;
   Serial.print("WiFi status: ");
+  Serial.println(WiFi.status());
+  Serial.print("LDR value: ");
   Serial.println(ldrStatus);
   Serial.println(WiFi.status() == WL_CONNECTED ? "connected" : "not connected");
   if (isLedOn)
