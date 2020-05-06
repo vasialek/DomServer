@@ -9,8 +9,8 @@
 #include <ESPAsyncWebServer.h>
 
 // SSID and password for connection
-String ssid = "ML_16";
-String password = "XXXXXXXXXX";
+String ssid = "Cgates_E03973";
+String password = "";
 
 // const int PinRed = 15;
 // const int PinBlue = 13;
@@ -44,6 +44,10 @@ void handleLdr(AsyncWebServerRequest *request) {
   request->send(200, "text/plain", "LDR: " + String(analogRead(ldrPin)));
 }
 
+void handlePage(AsyncWebServerRequest *request){
+  request->send(200, "text/plain", "Simple text is " + String(analogRead(ledPin)));
+}
+
 void setup() {
   Serial.begin(9600);
   Serial.println("Starting DomServer...");
@@ -68,6 +72,7 @@ void printHeartBeat()
 void setupServerHandlers() {
   server.on("/", HTTP_GET, handleIndex);
   server.on("/ldr", HTTP_GET, handleLdr);
+  server.on("/page", HTTP_GET, handlePage);
   server.onNotFound(handleNotFound);
 
   server.begin();
