@@ -64,6 +64,7 @@ void printHeartBeat()
   Serial.println(WiFi.status() == WL_CONNECTED ? "connected" : "not connected");
   if (WiFi.status() == WL_CONNECTED)
   {
+    analogWrite(ledPin, 150);
     Serial.print("IP of DomServer: ");
     Serial.println(WiFi.localIP());
   }
