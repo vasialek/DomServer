@@ -20,7 +20,7 @@ const int ldrPin = A0;
 
 // Possible WiFi states
 const int WiFiClientInitializing = 0;
-const int WiFiClientConnecting = 1; // qqqqqq
+const int WiFiClientConnecting = 1; 
 const int WiFiClientConnected = 2;
 const int WiFiAccessPoint = 4;
 const int WiFiSetup = 8;
