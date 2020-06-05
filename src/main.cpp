@@ -18,6 +18,8 @@ String password = "";
 const int ledPin = 12;
 const int ldrPin = A0;
 
+const char* PARAM_MESSAGE = "message";
+
 // Possible WiFi states
 const int WiFiClientInitializing = 0;
 const int WiFiClientConnecting = 1;
@@ -48,6 +50,20 @@ void handlePage(AsyncWebServerRequest *request){
   request->send(200, "text/plain", "Simple text is " + String(analogRead(ledPin)));
 }
 
+void turnOff(AsyncWebServerRequest *reqeust)
+{
+  // Send a GET request to <IP>/get?message=<message>
+    server.on("/get", HTTP_GET, [] (AsyncWebServerRequest *request) {
+        String message;
+        if (request->hasParam(PARAM_MESSAGE)) {
+            message = request->getParam(PARAM_MESSAGE)->value();
+        } else {
+            message = "No message sent";
+        }
+        request->send(200, "text/plain", "Hello, GET: " + message);
+    });
+}
+
 void setup() {
   Serial.begin(9600);
   Serial.println("Starting DomServer...");
@@ -71,6 +87,7 @@ void printHeartBeat()
 }
 
 void setupServerHandlers() {
+  server.on("/get", HTTP_GET, turnOff);
   server.on("/", HTTP_GET, handleIndex);
   server.on("/ldr", HTTP_GET, handleLdr);
   server.on("/page", HTTP_GET, handlePage);
