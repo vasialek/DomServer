@@ -7,18 +7,14 @@
   #include <ESPAsyncTCP.h>
 #endif
 #include <ESPAsyncWebServer.h>
+#include "credentials.h"
 
-// SSID and password for connection
-String ssid = "Cgates_E03973";
-String password = "";
 
 // const int PinRed = 15;
 // const int PinBlue = 13;
 // const int PinGreen = 12;
 const int ledPin = 12;
 const int ldrPin = A0;
-
-const char* PARAM_MESSAGE = "message";
 
 // Possible WiFi states
 const int WiFiClientInitializing = 0;
@@ -50,18 +46,18 @@ void handlePage(AsyncWebServerRequest *request){
   request->send(200, "text/plain", "Simple text is " + String(analogRead(ledPin)));
 }
 
-void turnOff(AsyncWebServerRequest *reqeust)
+void turnLed(AsyncWebServerRequest *request)
 {
-  // Send a GET request to <IP>/get?message=<message>
-    server.on("/get", HTTP_GET, [] (AsyncWebServerRequest *request) {
-        String message;
-        if (request->hasParam(PARAM_MESSAGE)) {
-            message = request->getParam(PARAM_MESSAGE)->value();
-        } else {
-            message = "No message sent";
-        }
-        request->send(200, "text/plain", "Hello, GET: " + message);
-    });
+  Serial.println("Got /turnoLed request...");
+  String value;
+  if (request->hasParam("r")) {
+      value = request->getParam("r")->value();
+      Serial.println("Going to set RED LED to: " + value);
+      int v = atoi(value.c_str());
+      Serial.print("  value (int) is: ");
+      Serial.println(v);
+  }
+  request->send(200, "text/plain", "OK");
 }
 
 void setup() {
@@ -87,9 +83,9 @@ void printHeartBeat()
 }
 
 void setupServerHandlers() {
-  server.on("/get", HTTP_GET, turnOff);
   server.on("/", HTTP_GET, handleIndex);
   server.on("/ldr", HTTP_GET, handleLdr);
+  server.on("/led", HTTP_GET, turnLed);
   server.on("/page", HTTP_GET, handlePage);
   server.onNotFound(handleNotFound);
 
@@ -103,12 +99,12 @@ void loop() {
   switch (wifiState)
   {
   case WiFiClientInitializing:
-    Serial.print("Going to connect to WiFi: ");
-    Serial.print(ssid.c_str());
+    Serial.print("Going to connect to WiFi:");
+    Serial.print(ssid);
     Serial.print("/");
-    Serial.println(password.c_str());
+    Serial.println("*******");
     WiFi.mode(WIFI_STA);
-    WiFi.begin(ssid.c_str(), password.c_str());
+    WiFi.begin(ssid, password);
     wifiState = WiFiClientConnecting;
     break;
 
