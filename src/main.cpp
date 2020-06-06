@@ -10,9 +10,9 @@
 #include "credentials.h"
 
 
-// const int PinRed = 15;
-// const int PinBlue = 13;
-// const int PinGreen = 12;
+const int PinRed = 15;
+const int PinBlue = 13;
+const int PinGreen = 12;
 const int ledPin = 12;
 const int ldrPin = A0;
 
@@ -48,16 +48,65 @@ void handlePage(AsyncWebServerRequest *request){
 
 void turnLed(AsyncWebServerRequest *request)
 {
-  Serial.println("Got /turnoLed request...");
-  String value;
-  if (request->hasParam("r")) {
+  Serial.println("Got /turnonLed request...");
+  String value, valueR, valueG, valueB;
+  if (request->hasParam("r")) 
+  {
       value = request->getParam("r")->value();
+      request->send(200, "text/plain", "RED LED value is: " + value);
       Serial.println("Going to set RED LED to: " + value);
       int v = atoi(value.c_str());
       Serial.print("  value (int) is: ");
       Serial.println(v);
+      analogWrite(PinRed, v);
   }
-  request->send(200, "text/plain", "OK");
+  else if(request->hasParam("g"))
+  { 
+    value = request->getParam("g")->value();
+    request->send(200, "text/plain", "GREEN LED value is: " + value);
+    Serial.println("Going to set GREEN LED to: " + value);
+    int v = atoi(value.c_str());
+    Serial.print(" value (int) is: ");
+    Serial.println(v);
+    analogWrite(PinGreen, v);
+  }
+  else if(request->hasParam("b"))
+  {
+    value = request->getParam("b")->value();
+    request->send(200, "text/plain", "BLUE LED value is: " + value);
+    Serial.println("Going to set BLUE LED to: " + value);
+    int v = atoi(value.c_str());
+    Serial.print(" value (int) is: ");
+    Serial.println(v);
+    analogWrite(PinBlue, v);
+  }
+  else if(request->hasParam("r") && request->hasParam("g") && request->hasParam("b"))
+  {
+    //value = request->getParam("rgb")->value();
+    valueR = request->getParam("r")->value();
+    valueG = request->getParam("g")->value();
+    valueB = request->getParam("b")->value();
+    request->send(200, "text/plain", "RED LED value is: " + valueR + "\nGREEN LED value is: " + valueG + "\nBLUE LED value is: " + valueB);
+    Serial.println("Going to set RED, GREEN and BLUE values to: " + valueR + valueG + valueB);
+    int r = atoi(valueR.c_str());
+    int g = atoi(valueG.c_str());
+    int b = atoi(valueB.c_str());
+    Serial.print(" values (int) are: ");
+    Serial.println(r);
+    Serial.println(g);
+    Serial.println(b);
+    analogWrite(PinRed, r);
+    analogWrite(PinGreen, g);
+    analogWrite(PinBlue, b);
+  }
+  /* show all values
+  else if(request->hasParam("values"))
+  {
+    int r = analogRead(PinRed);
+    int g = analogRead(PinGreen);
+    int b = analogRead(PinBlue);
+    request->send(200, "text/plain", "RED LED value is: " + r + "\nGREEN LED values is: " + g + "\nBLUE LED value is: " + b);
+  } */
 }
 
 void setup() {
@@ -76,7 +125,7 @@ void printHeartBeat()
   Serial.println(WiFi.status() == WL_CONNECTED ? "connected" : "not connected");
   if (WiFi.status() == WL_CONNECTED)
   {
-    analogWrite(ledPin, 150);
+    // analogWrite(ledPin, 150);
     Serial.print("IP of DomServer: ");
     Serial.println(WiFi.localIP());
   }
