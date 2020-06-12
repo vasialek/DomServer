@@ -42,6 +42,36 @@ void handleLdr(AsyncWebServerRequest *request) {
   request->send(200, "text/plain", "LDR: " + String(analogRead(ldrPin)));
 }
 
+void RED(AsyncWebServerRequest *request)
+{
+  String value;
+  value = request->getParam("r")->value();
+  request->send(200, "text/plain", "RED LED value is: " + value);
+  Serial.println("Going to set RED LED value to: " + value);
+  int v = atoi(value.c_str());
+  analogWrite(PinRed, v);
+}
+
+void GREEN(AsyncWebServerRequest *request)
+{
+  String value;
+  value = request->getParam("g")->value();
+  request->send(200, "text/plain", "GREEN LED value is: " + value);
+  Serial.println("Going to set GREEN LED value to: " + value);
+  int v = atoi(value.c_str());
+  analogWrite(PinGreen, v);
+}
+
+void BLUE(AsyncWebServerRequest *request)
+{
+  String value;
+  value = request->getParam("b")->value();
+  request->send(200, "text/plain", "BLUE LED value is: " + value);
+  Serial.println("going to set BLUE LED value to: " + value);
+  int v = atoi(value.c_str());
+  analogWrite(PinBlue, v);
+}
+
 void handlePage(AsyncWebServerRequest *request){
   request->send(200, "text/plain", "Simple text is " + String(analogRead(ledPin)));
 }
@@ -49,64 +79,18 @@ void handlePage(AsyncWebServerRequest *request){
 void turnLed(AsyncWebServerRequest *request)
 {
   Serial.println("Got /turnonLed request...");
-  String value, valueR, valueG, valueB;
-  if (request->hasParam("r")) 
-  {
-      value = request->getParam("r")->value();
-      request->send(200, "text/plain", "RED LED value is: " + value);
-      Serial.println("Going to set RED LED to: " + value);
-      int v = atoi(value.c_str());
-      Serial.print("  value (int) is: ");
-      Serial.println(v);
-      analogWrite(PinRed, v);
+  if (request->hasParam("r"))
+  { 
+    RED(request);
   }
   else if(request->hasParam("g"))
-  { 
-    value = request->getParam("g")->value();
-    request->send(200, "text/plain", "GREEN LED value is: " + value);
-    Serial.println("Going to set GREEN LED to: " + value);
-    int v = atoi(value.c_str());
-    Serial.print(" value (int) is: ");
-    Serial.println(v);
-    analogWrite(PinGreen, v);
+  {
+    GREEN(request);
   }
   else if(request->hasParam("b"))
-  {
-    value = request->getParam("b")->value();
-    request->send(200, "text/plain", "BLUE LED value is: " + value);
-    Serial.println("Going to set BLUE LED to: " + value);
-    int v = atoi(value.c_str());
-    Serial.print(" value (int) is: ");
-    Serial.println(v);
-    analogWrite(PinBlue, v);
+  { 
+    BLUE(request);
   }
-  else if(request->hasParam("r") && request->hasParam("g") && request->hasParam("b"))
-  {
-    //value = request->getParam("rgb")->value();
-    valueR = request->getParam("r")->value();
-    valueG = request->getParam("g")->value();
-    valueB = request->getParam("b")->value();
-    request->send(200, "text/plain", "RED LED value is: " + valueR + "\nGREEN LED value is: " + valueG + "\nBLUE LED value is: " + valueB);
-    Serial.println("Going to set RED, GREEN and BLUE values to: " + valueR + valueG + valueB);
-    int r = atoi(valueR.c_str());
-    int g = atoi(valueG.c_str());
-    int b = atoi(valueB.c_str());
-    Serial.print(" values (int) are: ");
-    Serial.println(r);
-    Serial.println(g);
-    Serial.println(b);
-    analogWrite(PinRed, r);
-    analogWrite(PinGreen, g);
-    analogWrite(PinBlue, b);
-  }
-  /* show all values
-  else if(request->hasParam("values"))
-  {
-    int r = analogRead(PinRed);
-    int g = analogRead(PinGreen);
-    int b = analogRead(PinBlue);
-    request->send(200, "text/plain", "RED LED value is: " + r + "\nGREEN LED values is: " + g + "\nBLUE LED value is: " + b);
-  } */
 }
 
 void setup() {
