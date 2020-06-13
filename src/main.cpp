@@ -8,6 +8,8 @@
 #endif
 #include <ESPAsyncWebServer.h>
 #include "credentials.h"
+#include <string>
+
 
 
 const int PinRed = 15;
@@ -44,6 +46,11 @@ void handleLdr(AsyncWebServerRequest *request) {
 
 void setLedPinTo(int pin, const String paramValue){
   // todo: convert to int. If value >= 0 and value < 255 then set pin to this value
+  int v = atoi(paramValue.c_str());
+  if(v >= 0 && v <= 255)
+  {
+    analogWrite(pin, v);
+  }
 }
 
 void handlePage(AsyncWebServerRequest *request){
@@ -59,6 +66,12 @@ void handleRgb(AsyncWebServerRequest *request)
    *    /led?r=250b=250
    *    ....
    */
+   
+   do{
+      setLedPinTo(request->getParam)->value());
+  }
+  while(request->getParam == true)
+  
   if (request->hasParam("r"))
   { 
     setLedPinTo(PinRed, request->getParam("r")->value());
