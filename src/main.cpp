@@ -42,55 +42,36 @@ void handleLdr(AsyncWebServerRequest *request) {
   request->send(200, "text/plain", "LDR: " + String(analogRead(ldrPin)));
 }
 
-void RED(AsyncWebServerRequest *request)
-{
-  String value;
-  value = request->getParam("r")->value();
-  request->send(200, "text/plain", "RED LED value is: " + value);
-  Serial.println("Going to set RED LED value to: " + value);
-  int v = atoi(value.c_str());
-  analogWrite(PinRed, v);
-}
-
-void GREEN(AsyncWebServerRequest *request)
-{
-  String value;
-  value = request->getParam("g")->value();
-  request->send(200, "text/plain", "GREEN LED value is: " + value);
-  Serial.println("Going to set GREEN LED value to: " + value);
-  int v = atoi(value.c_str());
-  analogWrite(PinGreen, v);
-}
-
-void BLUE(AsyncWebServerRequest *request)
-{
-  String value;
-  value = request->getParam("b")->value();
-  request->send(200, "text/plain", "BLUE LED value is: " + value);
-  Serial.println("going to set BLUE LED value to: " + value);
-  int v = atoi(value.c_str());
-  analogWrite(PinBlue, v);
+void setLedPinTo(int pin, const String paramValue){
+  // todo: convert to int. If value >= 0 and value < 255 then set pin to this value
 }
 
 void handlePage(AsyncWebServerRequest *request){
   request->send(200, "text/plain", "Simple text is " + String(analogRead(ledPin)));
 }
 
-void turnLed(AsyncWebServerRequest *request)
+void handleRgb(AsyncWebServerRequest *request)
 {
-  Serial.println("Got /turnonLed request...");
+  Serial.println("Got /led request...");
+  /* todo: this handler should handle such requests:
+   *    /led?r=250&g=250&b=250
+   *    /led?g=250&b=250
+   *    /led?r=250b=250
+   *    ....
+   */
   if (request->hasParam("r"))
   { 
-    RED(request);
+    setLedPinTo(PinRed, request->getParam("r")->value());
   }
   else if(request->hasParam("g"))
   {
-    GREEN(request);
+    setLedPinTo(PinGreen, request->getParam("g")->value());
   }
   else if(request->hasParam("b"))
   { 
-    BLUE(request);
+    setLedPinTo(PinBlue, request->getParam("b")->value());
   }
+  request->send(200, "text/plain", "OK");
 }
 
 void setup() {
@@ -99,6 +80,9 @@ void setup() {
 
   pinMode(ledPin, OUTPUT);
   pinMode(ldrPin, INPUT);
+  pinMode(PinRed, INPUT);
+  pinMode(PinGreen, INPUT);
+  pinMode(PinBlue, INPUT);
 }
 
 void printHeartBeat()
@@ -118,7 +102,7 @@ void printHeartBeat()
 void setupServerHandlers() {
   server.on("/", HTTP_GET, handleIndex);
   server.on("/ldr", HTTP_GET, handleLdr);
-  server.on("/led", HTTP_GET, turnLed);
+  server.on("/led", HTTP_GET, handleRgb);
   server.on("/page", HTTP_GET, handlePage);
   server.onNotFound(handleNotFound);
 
