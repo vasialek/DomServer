@@ -67,11 +67,6 @@ void handleRgb(AsyncWebServerRequest *request)
    *    ....
    */
    
-   do{
-      setLedPinTo(request->getParam)->value());
-  }
-  while(request->getParam == true)
-  
   if (request->hasParam("r"))
   { 
     setLedPinTo(PinRed, request->getParam("r")->value());
