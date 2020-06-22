@@ -9,6 +9,7 @@
 #include <ESPAsyncWebServer.h>
 #include "credentials.h"
 #include <string>
+#include "blackjack.h"
 
 
 
@@ -38,6 +39,11 @@ void handleNotFound(AsyncWebServerRequest *request) {
 
 void handleIndex(AsyncWebServerRequest *request) {
   request->send(200, "text/html", "<html><head><title>DomServer</title></head><body>Welcome to DomServer</body></html>");
+}
+
+void blackjack(AsyncWebServerRequest *request)
+{
+  // request->send(200, "text/plain", );
 }
 
 void handleLdr(AsyncWebServerRequest *request) {
@@ -112,6 +118,7 @@ void setupServerHandlers() {
   server.on("/ldr", HTTP_GET, handleLdr);
   server.on("/led", HTTP_GET, handleRgb);
   server.on("/page", HTTP_GET, handlePage);
+  server.on("/blackjack",HTTP_GET, blackjack);
   server.onNotFound(handleNotFound);
 
   server.begin();
