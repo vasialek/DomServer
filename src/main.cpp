@@ -10,7 +10,7 @@
 #include "credentials.h"
 #include <string>
 #include "blackjack.h"
-
+#include "ArduinoJson-v6.15.2.h"
 
 
 const int PinRed = 15;
@@ -43,7 +43,31 @@ void handleIndex(AsyncWebServerRequest *request) {
 
 void blackjack(AsyncWebServerRequest *request)
 {
-  // request->send(200, "text/plain", );
+/*todo:
+/blackjack/newgame
+/blackjack/start
+/blackjack/get
+*/
+
+  request->send(200, "text/plain", "Welcome to Blackjack!");
+}
+
+void handleNewGame(AsyncWebServerRequest *request)
+{
+  //todo: shuffle cards
+  request->send(200, "application/json", "{\"id\":\"\123456\"}");
+}
+
+void handleStart(AsyncWebServerRequest *request)
+{
+  //todo: get id of the game -> validate id of the game -> give cards
+  request->send(200, "application/json", "\"[{\"id\":1,\"name\":\"2D\"},{\"id\":2,\"name\":\"AC\"}]\"");
+}
+
+void handleGet(AsyncWebServerRequest *request)
+{
+  //todo: get id of the game -> check player's score
+  request->send(200, "application/json", "\"{\"id\":1,\"name\":\"2D\"}\"");
 }
 
 void handleLdr(AsyncWebServerRequest *request) {
@@ -66,13 +90,6 @@ void handlePage(AsyncWebServerRequest *request){
 void handleRgb(AsyncWebServerRequest *request)
 {
   Serial.println("Got /led request...");
-  /* todo: this handler should handle such requests:
-   *    /led?r=250&g=250&b=250
-   *    /led?g=250&b=250
-   *    /led?r=250b=250
-   *    ....
-   */
-  
   if (request->hasParam("r"))
   { 
     setLedPinTo(PinRed, request->getParam("r")->value());
@@ -118,7 +135,9 @@ void setupServerHandlers() {
   server.on("/ldr", HTTP_GET, handleLdr);
   server.on("/led", HTTP_GET, handleRgb);
   server.on("/page", HTTP_GET, handlePage);
-  server.on("/blackjack",HTTP_GET, blackjack);
+  server.on("/blackjack/newgame",HTTP_GET, handleNewGame);
+  server.on("/blackjack/start",HTTP_GET, handleStart);
+  server.on("/blackjack/get",HTTP_GET, handleGet);
   server.onNotFound(handleNotFound);
 
   server.begin();
