@@ -10,7 +10,7 @@
 #include "credentials.h"
 #include <string>
 #include "blackjack.h"
-#include "ArduinoJson-v6.15.2.h"
+// #include "ArduinoJson-v6.15.2.h"
 
 
 const int PinRed = 15;
@@ -32,6 +32,11 @@ const ulong HeartbeatTimeoutMs = 2000;
 int wifiState = WiFiClientInitializing;
 
 AsyncWebServer server(80);
+BlackJackGame game;
+
+// temporary for output
+char buf[512];
+
 
 void handleNotFound(AsyncWebServerRequest *request) {
   request->send(404, "text/plain", "Page not found");
@@ -67,7 +72,11 @@ void handleStart(AsyncWebServerRequest *request)
 void handleGet(AsyncWebServerRequest *request)
 {
   //todo: get id of the game -> check player's score
-  request->send(200, "application/json", "\"{\"id\":1,\"name\":\"2D\"}\"");
+  int cardId = game.GetNexCard(nullptr);
+  // request->send(200, "application/json", "\"{\"id\":1,\"name\":\"2D\"}\"");
+  sprintf(buf, "{\"id\":%d,\"name\":\"2D\"}", cardId);
+  Serial.println(buf);
+  request->send(200, "application/json", buf);
 }
 
 void handleLdr(AsyncWebServerRequest *request) {
