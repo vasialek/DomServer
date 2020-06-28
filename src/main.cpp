@@ -66,7 +66,12 @@ void handleNewGame(AsyncWebServerRequest *request)
 void handleStart(AsyncWebServerRequest *request)
 {
   //todo: get id of the game -> validate id of the game -> give cards
-  request->send(200, "application/json", "\"[{\"id\":1,\"name\":\"2D\"},{\"id\":2,\"name\":\"AC\"}]\"");
+  //request->send(200, "application/json", "\"[{\"id\":1,\"name\":\"2D\"},{\"id\":2,\"name\":\"AC\"}]\"");
+  int cardId0 = game.GetNexCard(nullptr);
+  int cardId1 = game.GetNexCard(nullptr);
+  sprintf(buf, "[{\"id\":%d,\"name\":\"2D\"},{\"id\":%d,\"name\":\"AC\"}]", cardId0, cardId1);
+  Serial.println(buf);
+ request->send(200, "application/json", buf); 
 }
 
 void handleGet(AsyncWebServerRequest *request)
