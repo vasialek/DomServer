@@ -8,34 +8,53 @@
 class BlackJackGame
 {
 private:
-    /* data */
+    bool _cardsDealt[52];
 public:
     BlackJackGame();
-    int GetNexCard(bool cardsDealt[]);
+    int GetNexCard(const char *gameId);
+    void Shuffle(const char *gameId);
     ~BlackJackGame();
 };
 
 BlackJackGame::BlackJackGame()
 {
+    srand(time(0));
 }
 
-int BlackJackGame::GetNexCard(bool cardsDealt[])
+int BlackJackGame::GetNexCard(const char *gameId)
 {
-    static int cardId = 1;
-    return ++cardId;
+    int newCard;
+    
+    // todo: check if all cards are used
+    while (true)
+    {
+        newCard = (rand() % 52);
+        if (this->_cardsDealt[newCard] == false)
+        {
+            this->_cardsDealt[newCard] = true;
+            return newCard;
+        }
+        
+    }
+    
+    return -1;
+}
+
+void BlackJackGame::Shuffle(const char *gameId)
+{
+    for (int i = 0; i < 52; ++i)
+    {
+        this->_cardsDealt[i] = false;
+    }
 }
 
 BlackJackGame::~BlackJackGame()
 {
 }
 
-
-// void Shuffle(bool CardsDealt[]);
 // void PrintCard(int Card);
 // void PrintHand(int Hand[], const int CardCount);
-// int GetNextCard(bool CardsDealt[]);
 // int ScoreHand(int Hand[], const int CardCount);
 // void PrintScoresAndHands(int HouseHand[], const int HouseCardCount, int PlayerHand[], const int PlayerCardCount);
-
 
 #endif

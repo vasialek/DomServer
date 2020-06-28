@@ -10,8 +10,7 @@
 #include "credentials.h"
 #include <string>
 #include "blackjack.h"
-// #include "ArduinoJson-v6.15.2.h"
-
+#include <ArduinoJson.h>
 
 const int PinRed = 15;
 const int PinBlue = 13;
@@ -27,16 +26,14 @@ const int WiFiAccessPoint = 4;
 const int WiFiSetup = 8;
 const int WiFiServing = 16;
 
-const ulong HeartbeatTimeoutMs = 2000;
+const ulong HeartbeatTimeoutMs = 60000;
 
 int wifiState = WiFiClientInitializing;
 
 AsyncWebServer server(80);
 BlackJackGame game;
 
-// temporary for output
-char buf[512];
-
+char jsonBuffer[512];
 
 void handleNotFound(AsyncWebServerRequest *request) {
   request->send(404, "text/plain", "Page not found");
@@ -48,40 +45,43 @@ void handleIndex(AsyncWebServerRequest *request) {
 
 void blackjack(AsyncWebServerRequest *request)
 {
-/*todo:
-/blackjack/newgame
-/blackjack/start
-/blackjack/get
-*/
-
   request->send(200, "text/plain", "Welcome to Blackjack!");
 }
 
 void handleNewGame(AsyncWebServerRequest *request)
 {
-  //todo: shuffle cards
+  // todo: shuffle cards
+  // todo: serialize to JSON using library
   request->send(200, "application/json", "{\"id\":\"\123456\"}");
 }
 
 void handleStart(AsyncWebServerRequest *request)
 {
-  //todo: get id of the game -> validate id of the game -> give cards
-  //request->send(200, "application/json", "\"[{\"id\":1,\"name\":\"2D\"},{\"id\":2,\"name\":\"AC\"}]\"");
   int cardId0 = game.GetNexCard(nullptr);
   int cardId1 = game.GetNexCard(nullptr);
-  sprintf(buf, "[{\"id\":%d,\"name\":\"2D\"},{\"id\":%d,\"name\":\"AC\"}]", cardId0, cardId1);
-  Serial.println(buf);
- request->send(200, "application/json", buf); 
+
+  const int capacity = JSON_ARRAY_SIZE(2) + 2 * JSON_OBJECT_SIZE(2);
+  StaticJsonDocument<capacity> doc;
+
+  JsonObject card1 = doc.createNestedObject();
+  card1["id"] = cardId0;
+  card1["name"] = "XX";
+  JsonObject card2 = doc.createNestedObject();
+  card2["id"] = cardId1;
+  card2["name"] = "YY";
+
+  serializeJson(doc, jsonBuffer);
+
+  Serial.println(jsonBuffer);
+  request->send(200, "application/json", jsonBuffer);
 }
 
 void handleGet(AsyncWebServerRequest *request)
 {
-  //todo: get id of the game -> check player's score
   int cardId = game.GetNexCard(nullptr);
-  // request->send(200, "application/json", "\"{\"id\":1,\"name\":\"2D\"}\"");
-  sprintf(buf, "{\"id\":%d,\"name\":\"2D\"}", cardId);
-  Serial.println(buf);
-  request->send(200, "application/json", buf);
+
+  // todo: serialize to object, not array. See https://arduinojson.org/v6/doc/serialization/
+  request->send(200, "application/json", "");
 }
 
 void handleLdr(AsyncWebServerRequest *request) {
@@ -89,7 +89,6 @@ void handleLdr(AsyncWebServerRequest *request) {
 }
 
 void setLedPinTo(int pin, const String paramValue){
-  // todo: convert to int. If value >= 0 and value < 255 then set pin to this value
   int v = atoi(paramValue.c_str());
   if(v >= 0 && v <= 255)
   {
