@@ -50,7 +50,7 @@ void blackjack(AsyncWebServerRequest *request)
 
 void handleNewGame(AsyncWebServerRequest *request)
 {
-  // todo: shuffle cards
+  game.Shuffle(nullptr);
   // todo: serialize to JSON using library
   request->send(200, "application/json", "{\"id\":\"\123456\"}");
 }
@@ -79,9 +79,16 @@ void handleStart(AsyncWebServerRequest *request)
 void handleGet(AsyncWebServerRequest *request)
 {
   int cardId = game.GetNexCard(nullptr);
+  const int capacity = JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(2);
+  StaticJsonDocument<capacity> doc;
 
-  // todo: serialize to object, not array. See https://arduinojson.org/v6/doc/serialization/
-  request->send(200, "application/json", "");
+  JsonObject card = doc.createNestedObject();
+  card["id"] = cardId;
+  card["name"] = "AC";
+
+  serializeJson(doc, jsonBuffer);
+
+  request->send(200, "application/json", jsonBuffer);
 }
 
 void handleLdr(AsyncWebServerRequest *request) {
