@@ -82,7 +82,7 @@ void handleGet(AsyncWebServerRequest *request)
   const int capacity = JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(2);
   StaticJsonDocument<capacity> doc;
 
-  JsonObject card = doc.createNestedObject();
+  JsonObject card = doc.to<JsonObject>();
   card["id"] = cardId;
   card["name"] = "AC";
 
