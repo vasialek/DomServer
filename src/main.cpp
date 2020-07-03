@@ -79,7 +79,7 @@ void handleStart(AsyncWebServerRequest *request)
 void handleGet(AsyncWebServerRequest *request)
 {
   int cardId = game.GetNexCard(nullptr);
-  const int capacity = JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(2);
+  const int capacity = JSON_OBJECT_SIZE(2) + 2 * JSON_OBJECT_SIZE(2);
   StaticJsonDocument<capacity> doc;
 
   JsonObject card = doc.to<JsonObject>();
@@ -91,39 +91,6 @@ void handleGet(AsyncWebServerRequest *request)
   request->send(200, "application/json", jsonBuffer);
 }
 
-void handleLdr(AsyncWebServerRequest *request) {
-  request->send(200, "text/plain", "LDR: " + String(analogRead(ldrPin)));
-}
-
-void setLedPinTo(int pin, const String paramValue){
-  int v = atoi(paramValue.c_str());
-  if(v >= 0 && v <= 255)
-  {
-    analogWrite(pin, v);
-  }
-}
-
-void handlePage(AsyncWebServerRequest *request){
-  request->send(200, "text/plain", "Simple text is " + String(analogRead(ledPin)));
-}
-
-void handleRgb(AsyncWebServerRequest *request)
-{
-  Serial.println("Got /led request...");
-  if (request->hasParam("r"))
-  { 
-    setLedPinTo(PinRed, request->getParam("r")->value());
-  }
-  if(request->hasParam("g"))
-  {
-    setLedPinTo(PinGreen, request->getParam("g")->value());
-  }
-  if(request->hasParam("b"))
-  { 
-    setLedPinTo(PinBlue, request->getParam("b")->value());
-  }
-  request->send(200, "text/plain", "OK");
-}
 
 void setup() {
   Serial.begin(9600);
@@ -152,9 +119,6 @@ void printHeartBeat()
 
 void setupServerHandlers() {
   server.on("/", HTTP_GET, handleIndex);
-  server.on("/ldr", HTTP_GET, handleLdr);
-  server.on("/led", HTTP_GET, handleRgb);
-  server.on("/page", HTTP_GET, handlePage);
   server.on("/blackjack/newgame",HTTP_GET, handleNewGame);
   server.on("/blackjack/start",HTTP_GET, handleStart);
   server.on("/blackjack/get",HTTP_GET, handleGet);
