@@ -32,6 +32,7 @@ int wifiState = WiFiClientInitializing;
 
 AsyncWebServer server(80);
 BlackJackGame game;
+IdGenerator id;
 
 char jsonBuffer[512];
 
@@ -51,8 +52,15 @@ void blackjack(AsyncWebServerRequest *request)
 void handleNewGame(AsyncWebServerRequest *request)
 {
   game.Shuffle(nullptr);
-  // todo: serialize to JSON using library
-  request->send(200, "application/json", "{\"id\":\"\123456\"}");
+  const char* gameId = id.Generate();
+  
+  const int capacity = JSON_OBJECT_SIZE(1);
+  StaticJsonDocument<capacity> doc;
+  JsonObject id = doc.to<JsonObject>();
+  id["id"] = gameId;
+  serializeJson(doc, jsonBuffer);
+
+  request->send(200, "application/json", jsonBuffer);
 }
 
 void handleStart(AsyncWebServerRequest *request)
@@ -79,7 +87,7 @@ void handleStart(AsyncWebServerRequest *request)
 void handleGet(AsyncWebServerRequest *request)
 {
   int cardId = game.GetNexCard(nullptr);
-  const int capacity = JSON_OBJECT_SIZE(2) + 2 * JSON_OBJECT_SIZE(2);
+  const int capacity = JSON_OBJECT_SIZE(1);
   StaticJsonDocument<capacity> doc;
 
   JsonObject card = doc.to<JsonObject>();
