@@ -4,21 +4,31 @@
 #include <iostream>
 #include <time.h>
 #include <stdlib.h>
+#include "idgenerator.h"
 
 class BlackJackGame
 {
 private:
+    char _gameId[IdGenerator::LengthOfId + 1];
     bool _cardsDealt[52];
+    IdGenerator _generator;
 public:
     BlackJackGame();
-    int GetNexCard(const char *gameId);
+    const char* NewGame();
     void Shuffle(const char *gameId);
+    int GetNexCard(const char *gameId);
     ~BlackJackGame();
 };
 
 BlackJackGame::BlackJackGame()
 {
     srand(time(0));
+}
+
+const char* BlackJackGame::NewGame()
+{
+    strncpy(_gameId, _generator.Generate(), IdGenerator::LengthOfId);
+    return _gameId;
 }
 
 int BlackJackGame::GetNexCard(const char *gameId)
@@ -34,7 +44,6 @@ int BlackJackGame::GetNexCard(const char *gameId)
             this->_cardsDealt[newCard] = true;
             return newCard;
         }
-        
     }
     
     return -1;
@@ -42,6 +51,8 @@ int BlackJackGame::GetNexCard(const char *gameId)
 
 void BlackJackGame::Shuffle(const char *gameId)
 {
+    Serial.println("Shuffle: game ID: ");
+    Serial.println(gameId);
     for (int i = 0; i < 52; ++i)
     {
         this->_cardsDealt[i] = false;
