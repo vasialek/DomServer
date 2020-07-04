@@ -51,8 +51,8 @@ void blackjack(AsyncWebServerRequest *request)
 
 void handleNewGame(AsyncWebServerRequest *request)
 {
-  game.Shuffle(nullptr);
   const char* gameId = id.Generate();
+  game.Shuffle(gameId);
   
   const int capacity = JSON_OBJECT_SIZE(1);
   StaticJsonDocument<capacity> doc;
@@ -81,6 +81,7 @@ void handleStart(AsyncWebServerRequest *request)
   serializeJson(doc, jsonBuffer);
 
   Serial.println(jsonBuffer);
+  request->hasArg(handleNewGame(id));
   request->send(200, "application/json", jsonBuffer);
 }
 
