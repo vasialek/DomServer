@@ -65,8 +65,8 @@ void handleNewGame(AsyncWebServerRequest *request)
 
 void handleStart(AsyncWebServerRequest *request)
 {
-  int cardId0 = game.GetNexCard(nullptr);
-  int cardId1 = game.GetNexCard(nullptr);
+  int cardId0 = game.GetNexCard(id.Generate());
+  int cardId1 = game.GetNexCard(id.Generate());
 
   const int capacity = JSON_ARRAY_SIZE(2) + 2 * JSON_OBJECT_SIZE(2);
   StaticJsonDocument<capacity> doc;
@@ -81,14 +81,13 @@ void handleStart(AsyncWebServerRequest *request)
   serializeJson(doc, jsonBuffer);
 
   Serial.println(jsonBuffer);
-  request->hasArg(handleNewGame(id));
   request->send(200, "application/json", jsonBuffer);
 }
 
 void handleGet(AsyncWebServerRequest *request)
 {
-  int cardId = game.GetNexCard(nullptr);
-  const int capacity = JSON_OBJECT_SIZE(1);
+  int cardId = game.GetNexCard(id.Generate());
+  const int capacity = JSON_OBJECT_SIZE(2);
   StaticJsonDocument<capacity> doc;
 
   JsonObject card = doc.to<JsonObject>();
