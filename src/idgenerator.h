@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <cstring>
+#include "translator.h"
 
 class IdGenerator
 {

@@ -9,8 +9,10 @@
 #include <ESPAsyncWebServer.h>
 #include "credentials.h"
 #include <string>
+#include <stdio.h>
 #include "blackjack.h"
 #include <ArduinoJson.h>
+#include "translator.h"
 
 const int PinRed = 15;
 const int PinBlue = 13;
@@ -33,8 +35,10 @@ int wifiState = WiFiClientInitializing;
 AsyncWebServer server(80);
 BlackJackGame game;
 IdGenerator id;
+Translator cardName;
 
 char jsonBuffer[512];
+char buf[80];
 
 void handleNotFound(AsyncWebServerRequest *request) {
   request->send(404, "text/plain", "Page not found");
@@ -87,13 +91,13 @@ void handleStart(AsyncWebServerRequest *request)
 void handleGet(AsyncWebServerRequest *request)
 {
   int cardId = game.GetNexCard(id.Generate());
+  int cardName = cardName.GetCardName(cardId);
   const int capacity = JSON_OBJECT_SIZE(2);
   StaticJsonDocument<capacity> doc;
 
   JsonObject card = doc.to<JsonObject>();
   card["id"] = cardId;
-  card["name"] = "AC";
-
+  card["name"] = cardName;
   serializeJson(doc, jsonBuffer);
 
   request->send(200, "application/json", jsonBuffer);
