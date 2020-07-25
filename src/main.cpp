@@ -65,11 +65,7 @@ void reportError(AsyncWebServerRequest *request, const char* error, int errorCod
 }
 
 void handleNewGame(AsyncWebServerRequest *request)
-{
-
-  reportError(request, "testErrorMessage", 500);
-  return;
-  
+{ 
   const char* gameId = game.NewGame();
   
   const int capacity = JSON_OBJECT_SIZE(1);
@@ -82,11 +78,22 @@ void handleNewGame(AsyncWebServerRequest *request)
 }
 
 void handleStart(AsyncWebServerRequest *request)
-{
-  //  TODO: check if game id is present  
+{ 
+  if(request->hasParam("gameid") == false)
+  {
+      reportError(request, "No Game Id", 401);
+      return;
+  }
 
   AsyncWebParameter* p = request->getParam("gameid");
   const char* gameId = p->value().c_str();
+
+  if(game.IsValidGameId(gameId) == false)
+  {
+    reportError(request, "Invalid Game Id", 401);
+    return;
+  }
+
   int cardId0 = game.GetNexCard(gameId);
   int cardId1 = game.GetNexCard(gameId);
 
@@ -108,10 +115,21 @@ void handleStart(AsyncWebServerRequest *request)
 
 void handleGet(AsyncWebServerRequest *request)
 {
-  // TODO: VALIDATE GAME ID
+  if(request->hasParam("gameid") == false)
+  {
+    reportError(request, "No Game Id", 401);
+    return;
+  }
 
   AsyncWebParameter* p = request->getParam("gameid");
   const char* gameId = p->value().c_str();
+
+  if(game.IsValidGameId(gameId) == false)
+  {
+    reportError(request, "Invalid Game Id", 401);
+    return;
+  }
+
   int cardId = game.GetNexCard(gameId);
   const char* cardName = translator.GetCardName(cardId);
   const int capacity = JSON_OBJECT_SIZE(2);

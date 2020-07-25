@@ -12,12 +12,12 @@ private:
     char _gameId[IdGenerator::LengthOfId + 1];
     bool _cardsDealt[52];
     IdGenerator _generator;
-    bool IsValidGameId(const char *gameId);
 public:
     BlackJackGame();
     const char* NewGame();
     void Shuffle(const char *gameId);
     int GetNexCard(const char *gameId);
+    bool IsValidGameId(const char *gameId);
     ~BlackJackGame();
 };
 
@@ -53,7 +53,10 @@ int BlackJackGame::GetNexCard(const char *gameId)
 
 bool BlackJackGame::IsValidGameId(const char *gameId)
 {
-   // if (gameId, )
+    if (strcmp(gameId, _gameId) == 0)
+    {
+        return true;
+    }
 
     return false;
 }
