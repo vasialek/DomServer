@@ -52,10 +52,25 @@ void blackjack(AsyncWebServerRequest *request)
   request->send(200, "text/plain", "Welcome to Blackjack!");
 }
 
+void reportError(AsyncWebServerRequest *request, const char* error, int errorCode)
+{
+  const int capacity = JSON_OBJECT_SIZE(1);
+  StaticJsonDocument<capacity> doc;
+  JsonObject errorMessage = doc.to<JsonObject>();
+  errorMessage["msg"] = error;
+
+  serializeJson(doc, jsonBuffer);
+
+  request->send(errorCode, "application/json", jsonBuffer);
+}
+
 void handleNewGame(AsyncWebServerRequest *request)
 {
-  const char* gameId = game.NewGame();
+
+  reportError(request, "testErrorMessage", 500);
+  return;
   
+  const char* gameId = game.NewGame();
   
   const int capacity = JSON_OBJECT_SIZE(1);
   StaticJsonDocument<capacity> doc;
