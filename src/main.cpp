@@ -96,16 +96,18 @@ void handleStart(AsyncWebServerRequest *request)
 
   int cardId0 = game.GetNexCard(gameId);
   int cardId1 = game.GetNexCard(gameId);
+  const char* cardName0 = translator.GetCardName(cardId0);
+  const char* cardName1 = translator.GetCardName(cardId1);
 
   const int capacity = JSON_ARRAY_SIZE(2) + 2 * JSON_OBJECT_SIZE(2);
   StaticJsonDocument<capacity> doc;
 
   JsonObject card1 = doc.createNestedObject();
   card1["id"] = cardId0;
-  card1["name"] = "XX";
+  card1["name"] = cardName0;
   JsonObject card2 = doc.createNestedObject();
   card2["id"] = cardId1;
-  card2["name"] = "YY";
+  card2["name"] = cardName1;
 
   serializeJson(doc, jsonBuffer);
 
