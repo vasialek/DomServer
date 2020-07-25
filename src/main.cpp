@@ -34,7 +34,6 @@ int wifiState = WiFiClientInitializing;
 
 AsyncWebServer server(80);
 BlackJackGame game;
-IdGenerator id;
 Translator translator;
 
 char jsonBuffer[512];
@@ -55,8 +54,8 @@ void blackjack(AsyncWebServerRequest *request)
 
 void handleNewGame(AsyncWebServerRequest *request)
 {
-  const char* gameId = id.Generate();
-  game.Shuffle(gameId);
+  const char* gameId = game.NewGame();
+  
   
   const int capacity = JSON_OBJECT_SIZE(1);
   StaticJsonDocument<capacity> doc;
@@ -69,6 +68,8 @@ void handleNewGame(AsyncWebServerRequest *request)
 
 void handleStart(AsyncWebServerRequest *request)
 {
+  //  TODO: check if game id is present  
+
   AsyncWebParameter* p = request->getParam("gameid");
   const char* gameId = p->value().c_str();
   int cardId0 = game.GetNexCard(gameId);
@@ -92,6 +93,8 @@ void handleStart(AsyncWebServerRequest *request)
 
 void handleGet(AsyncWebServerRequest *request)
 {
+  // TODO: VALIDATE GAME ID
+
   AsyncWebParameter* p = request->getParam("gameid");
   const char* gameId = p->value().c_str();
   int cardId = game.GetNexCard(gameId);

@@ -12,6 +12,7 @@ private:
     char _gameId[IdGenerator::LengthOfId + 1];
     bool _cardsDealt[52];
     IdGenerator _generator;
+    bool IsValidGameId(const char *gameId);
 public:
     BlackJackGame();
     const char* NewGame();
@@ -28,6 +29,7 @@ BlackJackGame::BlackJackGame()
 const char* BlackJackGame::NewGame()
 {
     strncpy(_gameId, _generator.Generate(), IdGenerator::LengthOfId);
+    Shuffle(_gameId);
     return _gameId;
 }
 
@@ -47,6 +49,13 @@ int BlackJackGame::GetNexCard(const char *gameId)
     }
     
     return -1;
+}
+
+bool BlackJackGame::IsValidGameId(const char *gameId)
+{
+   // if (gameId, )
+
+    return false;
 }
 
 void BlackJackGame::Shuffle(const char *gameId)
