@@ -64,6 +64,37 @@ void reportError(AsyncWebServerRequest *request, const char* error, int errorCod
   request->send(errorCode, "application/json", jsonBuffer);
 }
 
+void handleAuth(AsyncWebServerRequest *request)
+{
+  if(request->hasParam("email") == false)
+  {
+    reportError(request, "Please specify your email", 401);
+    return;
+  }
+  if(request->hasParam("password") == false)
+  {
+    reportError(request, "Please specify your password", 401);
+    return;
+  }
+
+  AsyncWebParameter *pEmail = request->getParam("email");
+  AsyncWebParameter *pPassword = request->getParam("password");
+
+  if(strcasecmp("antoha.c2013@yandex.ru", pEmail->value().c_str()) == 0 && strcmp("123456", pPassword->value().c_str()) == 0)
+  {
+    const int capacity = JSON_OBJECT_SIZE(1);
+    StaticJsonDocument<capacity> doc;
+    JsonObject obj = doc.to<JsonObject>();
+    obj["token"] = "jdsfhfgjdfghgdfghfhfghh";
+    serializeJson(doc, jsonBuffer);
+
+    request->send(200, "application/json", jsonBuffer);
+
+    return;
+  }
+
+  reportError(request, "Email or Password is not valid", 401);
+}
 
 void handleNewGame(AsyncWebServerRequest *request)
 { 
@@ -85,8 +116,6 @@ void handleGetScores(AsyncWebServerRequest* request)
 
     int playerScore = game.GetScore(gameId);
     int dealerScore = game.GetDealerScore(gameId);
-
-    
 
     const int capacity = JSON_OBJECT_SIZE(2);
     StaticJsonDocument<capacity> doc;
@@ -194,6 +223,7 @@ void printHeartBeat()
 
 void setupServerHandlers() {
   server.on("/", HTTP_GET, handleIndex);
+  server.on("/auth", HTTP_POST, handleAuth);
   server.on("/blackjack/getscores", HTTP_GET, handleGetScores);
   server.on("/blackjack/newgame",HTTP_GET, handleNewGame);
   server.on("/blackjack/start",HTTP_GET, handleStart);
