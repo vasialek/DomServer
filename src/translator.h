@@ -10,12 +10,11 @@ private:
     char GetCardRank(int cardId);
     char GetCardSuit(int cardId);
 public:
-    const char* GetCardName(int cardId);
-    
+    const char *GetCardName(int cardId);
+    int GetCardValue(int cardId);
 };
 
-
-const char* Translator::GetCardName(int cardId)
+const char *Translator::GetCardName(int cardId)
 {
     char cardSuit = GetCardSuit(cardId);
     char cardRank = GetCardRank(cardId);
@@ -34,7 +33,7 @@ char Translator::GetCardRank(int cardId)
     case 9:
         return 'T';
     case 10:
-       return 'J';
+        return 'J';
     case 11:
         return 'Q';
     case 12:
@@ -59,6 +58,23 @@ char Translator::GetCardSuit(int cardId)
         return 'S';
     default:
         return '?';
+    }
+}
+
+int Translator::GetCardValue(int cardId)
+{
+    int rank = cardId % 13;
+    switch (rank)
+    {
+    case 0:
+        return 11;
+    case 9:
+    case 10:
+    case 11:
+    case 12:
+        return 10;
+    default:
+        return rank + 1;
     }
 }
 
