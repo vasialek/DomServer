@@ -64,6 +64,7 @@ void reportError(AsyncWebServerRequest *request, const char* error, int errorCod
   request->send(errorCode, "application/json", jsonBuffer);
 }
 
+
 void handleNewGame(AsyncWebServerRequest *request)
 { 
   const char* gameId = game.NewGame();
@@ -75,6 +76,26 @@ void handleNewGame(AsyncWebServerRequest *request)
   serializeJson(doc, jsonBuffer);
 
   request->send(200, "application/json", jsonBuffer);
+}
+
+void handleGetScores(AsyncWebServerRequest* request)
+{
+    AsyncWebParameter* p = request->getParam("gameid");
+    const char* gameId = p->value().c_str();
+
+    int playerScore = game.GetScore(gameId);
+    int dealerScore = game.GetDealerScore(gameId);
+
+    
+
+    const int capacity = JSON_OBJECT_SIZE(2);
+    StaticJsonDocument<capacity> doc;
+    JsonObject obj = doc.to<JsonObject>();
+    obj["score"] = playerScore;
+    obj["Dealer_score"] = dealerScore;
+    serializeJson(doc, jsonBuffer);
+
+    request->send(200, "application/json", jsonBuffer);
 }
 
 void handleStart(AsyncWebServerRequest *request)
@@ -173,6 +194,7 @@ void printHeartBeat()
 
 void setupServerHandlers() {
   server.on("/", HTTP_GET, handleIndex);
+  server.on("/blackjack/getscores", HTTP_GET, handleGetScores);
   server.on("/blackjack/newgame",HTTP_GET, handleNewGame);
   server.on("/blackjack/start",HTTP_GET, handleStart);
   server.on("/blackjack/get",HTTP_GET, handleGet);
