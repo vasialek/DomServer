@@ -5,6 +5,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include "idgenerator.h"
+#include "translator.h"
 
 class BlackJackGame
 {
@@ -12,9 +13,14 @@ private:
     char _gameId[IdGenerator::LengthOfId + 1];
     bool _cardsDealt[52];
     IdGenerator _generator;
+    Translator _translator;
+    int _score = 0;
+    int _dealerScore = 0;
 public:
     BlackJackGame();
     const char* NewGame();
+    int GetScore(const char *gameId){return _score;}
+    int GetDealerScore(const char *gameId){return _dealerScore;}
     void Shuffle(const char *gameId);
     int GetNexCard(const char *gameId);
     bool IsValidGameId(const char *gameId);
@@ -38,12 +44,18 @@ int BlackJackGame::GetNexCard(const char *gameId)
     int newCard;
     
     // todo: check if all cards are used
+
+
     while (true)
     {
         newCard = (rand() % 52);
         if (this->_cardsDealt[newCard] == false)
         {
             this->_cardsDealt[newCard] = true;
+            
+            // Assuming this card is for the player, count his score
+            _score += _translator.GetCardValue(newCard);
+
             return newCard;
         }
     }
