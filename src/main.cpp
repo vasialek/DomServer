@@ -13,6 +13,7 @@
 #include "blackjack.h"
 #include <ArduinoJson.h>
 #include "translator.h"
+#include "userrepository.h"
 
 const int PinRed = 15;
 const int PinBlue = 13;
@@ -35,6 +36,7 @@ int wifiState = WiFiClientInitializing;
 AsyncWebServer server(80);
 BlackJackGame game;
 Translator translator;
+UserRepository userRepository;
 
 char jsonBuffer[512];
 char buf[80];
@@ -80,18 +82,7 @@ void handleAuth(AsyncWebServerRequest *request)
   AsyncWebParameter *pEmail = request->getParam("email");
   AsyncWebParameter *pPassword = request->getParam("password");
 
-  if(strcasecmp("antoha.c2013@yandex.ru", pEmail->value().c_str()) == 0 && strcmp("123456", pPassword->value().c_str()) == 0)
-  {
-    const int capacity = JSON_OBJECT_SIZE(1);
-    StaticJsonDocument<capacity> doc;
-    JsonObject obj = doc.to<JsonObject>();
-    obj["token"] = "jdsfhfgjdfghgdfghfhfghh";
-    serializeJson(doc, jsonBuffer);
-
-    request->send(200, "application/json", jsonBuffer);
-
-    return;
-  }
+  // todo: use UserRepository.GetUser method
 
   reportError(request, "Email or Password is not valid", 401);
 }
@@ -205,6 +196,9 @@ void setup() {
   pinMode(PinRed, INPUT);
   pinMode(PinGreen, INPUT);
   pinMode(PinBlue, INPUT);
+
+  userRepository.Add("proglamer@gmail.com", "123456");
+  userRepository.Add("antoha.c2013@yandex.ru", "123456");
 }
 
 void printHeartBeat()

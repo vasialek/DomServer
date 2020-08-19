@@ -1,7 +1,7 @@
 #ifndef USERREPOSITORY_H
 #define USERREPOSITORY_H
 
-#include "modes.h"
+#include "models.h"
 #include <iostream>
 
 class UserRepository
@@ -12,6 +12,7 @@ private:
     int _totalUsers = 0;
 public:
     UserRepository();
+    bool GetUser(const char* email, const char* password);
     void Add(UserEntity* user);
     void Add(const char* email, const char* password);
     void Print();
@@ -21,6 +22,12 @@ public:
 UserRepository::UserRepository()
 {
     _users = new UserEntity[MaxUsers];
+}
+
+bool UserRepository::GetUser(const char* email, const char* password)
+{
+    // todo: loop through all users and check if email & password are OK (use UserEntity.Match method)
+    return false;
 }
 
 void UserRepository::Add(const char* email, const char* password)
