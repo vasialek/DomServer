@@ -19,6 +19,8 @@ public:
     ~UserRepository();
 };
 
+UserEntity userEntity;
+
 UserRepository::UserRepository()
 {
     _users = new UserEntity[MaxUsers];
@@ -26,7 +28,13 @@ UserRepository::UserRepository()
 
 bool UserRepository::GetUser(const char* email, const char* password)
 {
-    // todo: loop through all users and check if email & password are OK (use UserEntity.Match method)
+    for (int i = 0; i < _totalUsers; i++)
+    {
+        if(userEntity.Match(email, password))
+        {
+            return true;
+        }
+    }
     return false;
 }
 
