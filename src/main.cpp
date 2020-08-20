@@ -29,7 +29,7 @@ const int WiFiAccessPoint = 4;
 const int WiFiSetup = 8;
 const int WiFiServing = 16;
 
-const ulong HeartbeatTimeoutMs = 60000;
+const ulong HeartbeatTimeoutMs = 10000;
 
 int wifiState = WiFiClientInitializing;
 
@@ -80,9 +80,12 @@ void handleAuth(AsyncWebServerRequest *request)
   }
 
   AsyncWebParameter *pEmail = request->getParam("email");
-  AsyncWebParameter *pPassword = request->getParam("password");
+  const char* email = pEmail->value().c_str();
 
-  // todo: use UserRepository.GetUser method
+  AsyncWebParameter *pPassword = request->getParam("password");
+  const char* password = pPassword->value().c_str();
+
+  userRepository.GetUser(email, password);
 
   reportError(request, "Email or Password is not valid", 401);
 }
