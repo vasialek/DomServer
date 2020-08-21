@@ -81,17 +81,16 @@ void handleAuth(AsyncWebServerRequest *request)
 
   AsyncWebParameter *pEmail = request->getParam("email");
   const char* email = pEmail->value().c_str();
-
   AsyncWebParameter *pPassword = request->getParam("password");
   const char* password = pPassword->value().c_str();
 
-  userRepository.GetUser(email, password);
-  
-  if(!userRepository.GetUser(email, password))
+  if(userRepository.GetUser(email, password))
   {
-    reportError(request, "Email or Password is not valid", 401);
+    return reportError(request, "OK", 200);
   }
   
+  reportError(request, "Email or Password is invalid", 401);
+ 
 }
 
 void handleNewGame(AsyncWebServerRequest *request)
@@ -205,7 +204,7 @@ void setup() {
   pinMode(PinBlue, INPUT);
 
   userRepository.Add("proglamer@gmail.com", "123456");
-  userRepository.Add("antoha.c2013@yandex.ru", "123456");
+  userRepository.Add("antoha.c2013@yandex.ru", "123456");  
 }
 
 void printHeartBeat()
