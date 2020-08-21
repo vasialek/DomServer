@@ -86,8 +86,12 @@ void handleAuth(AsyncWebServerRequest *request)
   const char* password = pPassword->value().c_str();
 
   userRepository.GetUser(email, password);
-
-  reportError(request, "Email or Password is not valid", 401);
+  
+  if(!userRepository.GetUser(email, password))
+  {
+    reportError(request, "Email or Password is not valid", 401);
+  }
+  
 }
 
 void handleNewGame(AsyncWebServerRequest *request)

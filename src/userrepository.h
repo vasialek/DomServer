@@ -30,7 +30,7 @@ bool UserRepository::GetUser(const char* email, const char* password)
 {
     for (int i = 0; i < _totalUsers; i++)
     {
-        if(userEntity.Match(email, password))
+        if(userEntity.Match(_users[i].GetEmail(), _users[i].GetPassword()))
         {
             return true;
         }
