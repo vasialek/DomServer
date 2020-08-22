@@ -86,11 +86,11 @@ void handleAuth(AsyncWebServerRequest *request)
 
   if(userRepository.GetUser(email, password))
   {
-    return reportError(request, "OK", 200);
+    reportError(request, "OK", 200);
+    return;
   }
   
   reportError(request, "Email or Password is invalid", 401);
- 
 }
 
 void handleNewGame(AsyncWebServerRequest *request)

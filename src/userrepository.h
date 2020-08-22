@@ -28,7 +28,10 @@ bool UserRepository::GetUser(const char* email, const char* password)
 {
     for (int i = 0; i < _totalUsers; i++)
     {
-        // todo: check *email* and *password* with current user in *_users*
+        if(_users[i].Match(email, password))
+        {
+            return true;
+        }
     }
     return false;
 }
