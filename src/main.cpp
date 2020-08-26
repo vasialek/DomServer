@@ -141,8 +141,10 @@ void handleStart(AsyncWebServerRequest *request)
     return;
   }
 
-  int cardId0 = game.GetNexCard(gameId);
-  int cardId1 = game.GetNexCard(gameId);
+  // todo: call for dealer cards (do not return it to user)
+
+  int cardId0 = game.GetNextPlayerCard(gameId);
+  int cardId1 = game.GetNextPlayerCard(gameId);
   const char* cardName0 = translator.GetCardName(cardId0);
   const char* cardName1 = translator.GetCardName(cardId1);
 
@@ -179,7 +181,10 @@ void handleGet(AsyncWebServerRequest *request)
     return;
   }
 
-  int cardId = game.GetNexCard(gameId);
+  int cardId = game.GetNextPlayerCard(gameId);
+
+  // todo: call for dealer card (do not return it to user)
+
   const char* cardName = translator.GetCardName(cardId);
   const int capacity = JSON_OBJECT_SIZE(2);
   StaticJsonDocument<capacity> doc;

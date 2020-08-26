@@ -16,13 +16,15 @@ private:
     Translator _translator;
     int _score = 0;
     int _dealerScore = 0;
+    int GetNextCard(const char *gameId);
 public:
     BlackJackGame();
     const char* NewGame();
     int GetScore(const char *gameId){return _score;}
     int GetDealerScore(const char *gameId){return _dealerScore;}
     void Shuffle(const char *gameId);
-    int GetNexCard(const char *gameId);
+    int GetNextPlayerCard(const char *gameId);
+    int GetNextDealerCard(const char *gameId);
     bool IsValidGameId(const char *gameId);
     ~BlackJackGame();
 };
@@ -39,23 +41,33 @@ const char* BlackJackGame::NewGame()
     return _gameId;
 }
 
-int BlackJackGame::GetNexCard(const char *gameId)
+int BlackJackGame::GetNextPlayerCard(const char *gameId)
+{
+    int cardId = GetNextCard(gameId);
+               
+    // This card is for the player, count his score
+    _score += _translator.GetCardValue(cardId);
+
+    return cardId;
+}
+
+int BlackJackGame::GetNextDealerCard(const char *gameId)
+{
+    // todo: Implement logic for dealer card and dealer score
+    return -1;
+}
+
+int BlackJackGame::GetNextCard(const char *gameId)
 {
     int newCard;
     
     // todo: check if all cards are used
-
-
     while (true)
     {
         newCard = (rand() % 52);
         if (this->_cardsDealt[newCard] == false)
         {
             this->_cardsDealt[newCard] = true;
-            
-            // Assuming this card is for the player, count his score
-            _score += _translator.GetCardValue(newCard);
-
             return newCard;
         }
     }
