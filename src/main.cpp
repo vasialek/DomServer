@@ -142,6 +142,9 @@ void handleStart(AsyncWebServerRequest *request)
   }
 
   // todo: call for dealer cards (do not return it to user)
+  int dealerCard = game.GetNextDealerCard(gameId);
+  const char* dealerCardName = translator.GetCardName(dealerCard);
+  Serial.println(dealerCardName);
 
   int cardId0 = game.GetNextPlayerCard(gameId);
   int cardId1 = game.GetNextPlayerCard(gameId);

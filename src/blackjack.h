@@ -53,7 +53,9 @@ int BlackJackGame::GetNextPlayerCard(const char *gameId)
 
 int BlackJackGame::GetNextDealerCard(const char *gameId)
 {
-    // todo: Implement logic for dealer card and dealer score
+    int dealerCardId = GetNextCard(gameId);
+    _dealerScore += _translator.GetCardValue(dealerCardId);
+
     return -1;
 }
 
