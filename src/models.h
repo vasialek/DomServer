@@ -6,17 +6,18 @@
 
 class UserEntity
 {
-    private:
-        char* _email = nullptr;
-        char* _password = nullptr;
-        void CopyTo(char** destination, const char* source);
-    public:
-        UserEntity() {};
-        UserEntity(const char *email, const char *password);
-        const char* GetEmail() { return _email; };
-        const char* GetPassword() { return _password; };
-        bool Match(const char* email, const char* password);
-        ~UserEntity();
+private:
+    char *_email = nullptr;
+    char *_password = nullptr;
+    void CopyTo(char **destination, const char *source);
+
+public:
+    UserEntity(){};
+    UserEntity(const char *email, const char *password);
+    const char *GetEmail() { return _email; };
+    const char *GetPassword() { return _password; };
+    bool Match(const char *email, const char *password);
+    ~UserEntity();
 };
 
 UserEntity::UserEntity(const char *email, const char *password)
@@ -25,17 +26,17 @@ UserEntity::UserEntity(const char *email, const char *password)
     CopyTo(&_password, password);
 }
 
-bool UserEntity::Match(const char* email, const char* password)
+bool UserEntity::Match(const char *email, const char *password)
 {
     if (_email != nullptr && _password != nullptr && !strcasecmp(_email, email) && !strcmp(_password, password))
     {
         return true;
     }
-    
+
     return false;
 }
 
-void UserEntity::CopyTo(char** destination, const char* source)
+void UserEntity::CopyTo(char **destination, const char *source)
 {
     size_t len = strlen(source);
     *destination = new char[len + 1];
