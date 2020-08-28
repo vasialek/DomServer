@@ -141,29 +141,35 @@ void handleStart(AsyncWebServerRequest *request)
     return;
   }
 
-  // todo: call for dealer cards (do not return it to user)
   int dealerCard = game.GetNextDealerCard(gameId);
-  const char* dealerCardName = translator.GetCardName(dealerCard);
-  Serial.println(dealerCardName);
+  // const char* dealerCardName = translator.GetCardName(dealerCard);
+  Serial.print("Dealer card: ");
+  Serial.println(translator.GetCardName(dealerCard));
 
-  int cardId0 = game.GetNextPlayerCard(gameId);
   int cardId1 = game.GetNextPlayerCard(gameId);
-  const char* cardName0 = translator.GetCardName(cardId0);
-  const char* cardName1 = translator.GetCardName(cardId1);
+  int cardId2 = game.GetNextPlayerCard(gameId);
 
-  const int capacity = JSON_ARRAY_SIZE(2) + 2 * JSON_OBJECT_SIZE(2);
+  char cardName1[32], cardName2[32];
+  strncpy(cardName1, translator.GetCardName(cardId1), sizeof(cardName1));
+  Serial.print("Card name 1: ");
+  Serial.println(cardName1);
+  strncpy(cardName2, translator.GetCardName(cardId2), sizeof(cardName2));
+  Serial.print("Card name 2: ");
+  Serial.println(cardName2);
+
+  const int capacity = 2 * JSON_OBJECT_SIZE(2) + 2 * JSON_ARRAY_SIZE(2);
   StaticJsonDocument<capacity> doc;
 
   JsonObject card1 = doc.createNestedObject();
-  card1["id"] = cardId0;
-  card1["name"] = cardName0;
+  card1["id"] = cardId1;
+  card1["name"] = cardName1;
   JsonObject card2 = doc.createNestedObject();
-  card2["id"] = cardId1;
-  card2["name"] = cardName1;
+  card2["id"] = cardId2;
+  card2["name"] = cardName2;
 
   serializeJson(doc, jsonBuffer);
 
-  Serial.println(jsonBuffer);
+  // Serial.println(jsonBuffer);
   request->send(200, "application/json", jsonBuffer);
 }
 
