@@ -1,10 +1,10 @@
 #include <Arduino.h>
 #ifdef ESP32
-  #include <WiFi.h>
-  #include <AsyncTCP.h>
+#include <WiFi.h>
+#include <AsyncTCP.h>
 #elif defined(ESP8266)
-  #include <ESP8266WiFi.h>
-  #include <ESPAsyncTCP.h>
+#include <ESP8266WiFi.h>
+#include <ESPAsyncTCP.h>
 #endif
 #include <ESPAsyncWebServer.h>
 #include "credentials.h"
@@ -23,7 +23,7 @@ const int ldrPin = A0;
 
 // Possible WiFi states
 const int WiFiClientInitializing = 0;
-const int WiFiClientConnecting = 1; 
+const int WiFiClientConnecting = 1;
 const int WiFiClientConnected = 2;
 const int WiFiAccessPoint = 4;
 const int WiFiSetup = 8;
@@ -41,11 +41,13 @@ UserRepository userRepository;
 char jsonBuffer[512];
 char buf[80];
 
-void handleNotFound(AsyncWebServerRequest *request) {
+void handleNotFound(AsyncWebServerRequest *request)
+{
   request->send(404, "text/plain", "Page not found");
 }
 
-void handleIndex(AsyncWebServerRequest *request) {
+void handleIndex(AsyncWebServerRequest *request)
+{
   request->send(200, "text/html", "<html><head><title>DomServer</title></head><body>Welcome to DomServer</body></html>");
 }
 
@@ -54,7 +56,7 @@ void blackjack(AsyncWebServerRequest *request)
   request->send(200, "text/plain", "Welcome to Blackjack!");
 }
 
-void reportError(AsyncWebServerRequest *request, const char* error, int errorCode)
+void reportError(AsyncWebServerRequest *request, const char *error, int errorCode)
 {
   const int capacity = JSON_OBJECT_SIZE(1);
   StaticJsonDocument<capacity> doc;
@@ -68,35 +70,35 @@ void reportError(AsyncWebServerRequest *request, const char* error, int errorCod
 
 void handleAuth(AsyncWebServerRequest *request)
 {
-  if(request->hasParam("email") == false)
+  if (request->hasParam("email") == false)
   {
     reportError(request, "Please specify your email", 401);
     return;
   }
-  if(request->hasParam("password") == false)
+  if (request->hasParam("password") == false)
   {
     reportError(request, "Please specify your password", 401);
     return;
   }
 
   AsyncWebParameter *pEmail = request->getParam("email");
-  const char* email = pEmail->value().c_str();
+  const char *email = pEmail->value().c_str();
   AsyncWebParameter *pPassword = request->getParam("password");
-  const char* password = pPassword->value().c_str();
+  const char *password = pPassword->value().c_str();
 
-  if(userRepository.GetUser(email, password))
+  if (userRepository.GetUser(email, password))
   {
     reportError(request, "OK", 200);
     return;
   }
-  
+
   reportError(request, "Email or Password is invalid", 401);
 }
 
 void handleNewGame(AsyncWebServerRequest *request)
-{ 
-  const char* gameId = game.NewGame();
-  
+{
+  const char *gameId = game.NewGame();
+
   const int capacity = JSON_OBJECT_SIZE(1);
   StaticJsonDocument<capacity> doc;
   JsonObject id = doc.to<JsonObject>();
@@ -106,36 +108,38 @@ void handleNewGame(AsyncWebServerRequest *request)
   request->send(200, "application/json", jsonBuffer);
 }
 
-void handleGetScores(AsyncWebServerRequest* request)
+void handleGetScores(AsyncWebServerRequest *request)
 {
-    AsyncWebParameter* p = request->getParam("gameid");
-    const char* gameId = p->value().c_str();
+  // todo: move to separate method of game ID validation
+  AsyncWebParameter *p = request->getParam("gameid");
+  const char *gameId = p->value().c_str();
 
-    int playerScore = game.GetScore(gameId);
-    int dealerScore = game.GetDealerScore(gameId);
+  int playerScore = game.GetScore(gameId);
+  int dealerScore = game.GetDealerScore(gameId);
 
-    const int capacity = JSON_OBJECT_SIZE(2);
-    StaticJsonDocument<capacity> doc;
-    JsonObject obj = doc.to<JsonObject>();
-    obj["score"] = playerScore;
-    obj["Dealer_score"] = dealerScore;
-    serializeJson(doc, jsonBuffer);
+  const int capacity = JSON_OBJECT_SIZE(2);
+  StaticJsonDocument<capacity> doc;
+  JsonObject obj = doc.to<JsonObject>();
+  obj["score"] = playerScore;
+  obj["Dealer_score"] = dealerScore;
+  serializeJson(doc, jsonBuffer);
 
-    request->send(200, "application/json", jsonBuffer);
+  request->send(200, "application/json", jsonBuffer);
 }
 
 void handleStart(AsyncWebServerRequest *request)
-{ 
-  if(request->hasParam("gameid") == false)
+{
+  // todo: move to separate method of game ID validation
+  if (request->hasParam("gameid") == false)
   {
-      reportError(request, "No Game Id", 401);
-      return;
+    reportError(request, "No Game Id", 401);
+    return;
   }
 
-  AsyncWebParameter* p = request->getParam("gameid");
-  const char* gameId = p->value().c_str();
+  AsyncWebParameter *p = request->getParam("gameid");
+  const char *gameId = p->value().c_str();
 
-  if(game.IsValidGameId(gameId) == false)
+  if (game.IsValidGameId(gameId) == false)
   {
     reportError(request, "Invalid Game Id", 401);
     return;
@@ -175,16 +179,17 @@ void handleStart(AsyncWebServerRequest *request)
 
 void handleGet(AsyncWebServerRequest *request)
 {
-  if(request->hasParam("gameid") == false)
+  // todo: move to separate method of game ID validation
+  if (request->hasParam("gameid") == false)
   {
     reportError(request, "No Game Id", 401);
     return;
   }
 
-  AsyncWebParameter* p = request->getParam("gameid");
-  const char* gameId = p->value().c_str();
+  AsyncWebParameter *p = request->getParam("gameid");
+  const char *gameId = p->value().c_str();
 
-  if(game.IsValidGameId(gameId) == false)
+  if (game.IsValidGameId(gameId) == false)
   {
     reportError(request, "Invalid Game Id", 401);
     return;
@@ -194,7 +199,7 @@ void handleGet(AsyncWebServerRequest *request)
 
   // todo: call for dealer card (do not return it to user)
 
-  const char* cardName = translator.GetCardName(cardId);
+  const char *cardName = translator.GetCardName(cardId);
   const int capacity = JSON_OBJECT_SIZE(2);
   StaticJsonDocument<capacity> doc;
 
@@ -206,8 +211,8 @@ void handleGet(AsyncWebServerRequest *request)
   request->send(200, "application/json", jsonBuffer);
 }
 
-
-void setup() {
+void setup()
+{
   Serial.begin(9600);
   Serial.println("Starting DomServer...");
 
@@ -218,7 +223,7 @@ void setup() {
   pinMode(PinBlue, INPUT);
 
   userRepository.Add("proglamer@gmail.com", "123456");
-  userRepository.Add("antoha.c2013@yandex.ru", "123456");  
+  userRepository.Add("antoha.c2013@yandex.ru", "123456");
 }
 
 void printHeartBeat()
@@ -235,19 +240,21 @@ void printHeartBeat()
   }
 }
 
-void setupServerHandlers() {
+void setupServerHandlers()
+{
   server.on("/", HTTP_GET, handleIndex);
   server.on("/auth", HTTP_POST, handleAuth);
   server.on("/blackjack/getscores", HTTP_GET, handleGetScores);
-  server.on("/blackjack/newgame",HTTP_GET, handleNewGame);
-  server.on("/blackjack/start",HTTP_GET, handleStart);
-  server.on("/blackjack/get",HTTP_GET, handleGet);
+  server.on("/blackjack/newgame", HTTP_GET, handleNewGame);
+  server.on("/blackjack/start", HTTP_GET, handleStart);
+  server.on("/blackjack/get", HTTP_GET, handleGet);
   server.onNotFound(handleNotFound);
 
   server.begin();
 }
 
-void loop() {
+void loop()
+{
   static ulong wifiConnectionTimeoutMs = 0;
   static ulong checkstatusTimeoutMs = 0;
 
@@ -274,11 +281,11 @@ void loop() {
     }
     break;
 
-    case WiFiSetup:
-      Serial.println("Going to start WEB server...");
-      setupServerHandlers();
-      wifiState = WiFiServing;
-      break;
+  case WiFiSetup:
+    Serial.println("Going to start WEB server...");
+    setupServerHandlers();
+    wifiState = WiFiServing;
+    break;
   }
 
   if (millis() > checkstatusTimeoutMs || checkstatusTimeoutMs == 0)
@@ -286,5 +293,4 @@ void loop() {
     printHeartBeat();
     checkstatusTimeoutMs += HeartbeatTimeoutMs;
   }
-  
 }
