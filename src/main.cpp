@@ -7,13 +7,15 @@
 #include <ESPAsyncTCP.h>
 #endif
 #include <ESPAsyncWebServer.h>
+#include <ArduinoJson.h>
+// #include "ArduinoJWT.h"
 #include "credentials.h"
 #include <string>
 #include <stdio.h>
 #include "blackjack.h"
-#include <ArduinoJson.h>
 #include "translator.h"
 #include "userrepository.h"
+#include "jwthelper.h"
 
 const int PinRed = 15;
 const int PinBlue = 13;
@@ -37,6 +39,7 @@ AsyncWebServer server(80);
 BlackJackGame game;
 Translator translator;
 UserRepository userRepository;
+JwtHelper jwtEncoder("password");
 
 char jsonBuffer[512];
 char buf[80];
@@ -86,9 +89,11 @@ void handleAuth(AsyncWebServerRequest *request)
   AsyncWebParameter *pPassword = request->getParam("password");
   const char *password = pPassword->value().c_str();
 
-  if (userRepository.GetUser(email, password))
+  const char *userId = userRepository.GetUser(email, password);
+  if (userId != nullptr)
   {
-    reportError(request, "OK", 200);
+    const char *encoded = jwtEncoder.Encode("No Game ID", userId);
+    reportError(request, encoded, 200);
     return;
   }
 
@@ -211,6 +216,37 @@ void handleGet(AsyncWebServerRequest *request)
   request->send(200, "application/json", jsonBuffer);
 }
 
+void handleTest(AsyncWebServerRequest *request)
+{
+  // ArduinoJWT jwtEncode("TestPass");
+  // String payload = "{\"gameId\":\"GameId1234\",\"userId\":\"UserId1234354656565\"}";
+  // String jwt = jwtEncode.encodeJWT(payload);
+  // Serial.print("Encoded JWT: ");
+  // Serial.println(jwt);
+
+  // String decoded;
+  // jwtEncode.decodeJWT(jwt, decoded);
+  // Serial.print("Decoded: ");
+  // Serial.println(decoded);
+
+  JwtHelper jwtHelper("TestPass");
+
+  if(request->hasHeader("Authorization"))
+  {
+    AsyncWebHeader* h = request->getHeader("Authorization");
+    Serial.printf("Authorization: %s\n", h->value().c_str());
+    if(strncmp(h->value().c_str(), "Bearer ", 7))
+    { 
+      String jwt(h->value().c_str() + 7);
+      Serial.println(jwt);
+     // jwtEncoder.Decode();
+      // strcpy( )
+    }
+  }
+
+  reportError(request, jwtHelper.Encode("GameId1234567890", "UserId12345678901234567890"), 200);
+}
+
 void setup()
 {
   Serial.begin(9600);
@@ -222,8 +258,8 @@ void setup()
   pinMode(PinGreen, INPUT);
   pinMode(PinBlue, INPUT);
 
-  userRepository.Add("proglamer@gmail.com", "123456");
-  userRepository.Add("antoha.c2013@yandex.ru", "123456");
+  userRepository.Add("964c0d6eaaf34440baf0bd16dc966f27", "proglamer@gmail.com", "123456");
+  userRepository.Add("627950083e564e07884cd07412d8ba89", "antoha.c2013@yandex.ru", "123456");
 }
 
 void printHeartBeat()
@@ -243,6 +279,7 @@ void printHeartBeat()
 void setupServerHandlers()
 {
   server.on("/", HTTP_GET, handleIndex);
+  server.on("/test", HTTP_GET, handleTest);
   server.on("/auth", HTTP_POST, handleAuth);
   server.on("/blackjack/getscores", HTTP_GET, handleGetScores);
   server.on("/blackjack/newgame", HTTP_GET, handleNewGame);
