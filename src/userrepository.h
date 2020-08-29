@@ -13,9 +13,10 @@ private:
 
 public:
     UserRepository();
-    bool GetUser(const char *email, const char *password);
+    const char *GetUser(const char *email, const char *password);
+    UserEntity *GetUserById(const char *userId);
     void Add(UserEntity *user);
-    void Add(const char *email, const char *password);
+    void Add(const char *userId, const char *email, const char *password);
     void Print();
     ~UserRepository();
 };
@@ -25,21 +26,33 @@ UserRepository::UserRepository()
     _users = new UserEntity[MaxUsers];
 }
 
-bool UserRepository::GetUser(const char *email, const char *password)
+const char * UserRepository::GetUser(const char *email, const char *password)
 {
     for (int i = 0; i < _totalUsers; i++)
     {
         if (_users[i].Match(email, password))
         {
-            return true;
+            return _users[i].GetUserId();
         }
     }
-    return false;
+    return nullptr;
 }
 
-void UserRepository::Add(const char *email, const char *password)
+UserEntity *UserRepository::GetUserById(const char *userId)
 {
-    Add(new UserEntity(email, password));
+    for (int i = 0; i < _totalUsers; i++)
+    {
+        if (strcmp(_users[i].GetUserId(), userId) == 0)
+        {
+            return &_users[i];
+        }
+    }
+    return nullptr;
+}
+
+void UserRepository::Add(const char *userId, const char *email, const char *password)
+{
+    Add(new UserEntity(userId, email, password));
 }
 
 void UserRepository::Add(UserEntity *user)
@@ -55,7 +68,7 @@ void UserRepository::Print()
 {
     for (int i = 0; i < _totalUsers; i++)
     {
-        std::cout << i + 1 << ": " << _users[i].GetEmail() << "\t" << _users[i].GetPassword() << std::endl;
+        std::cout << i + 1 << ": " << _users[i].GetUserId() << "\t" << _users[i].GetEmail() << "\t" << _users[i].GetPassword() << std::endl;
     }
 }
 
