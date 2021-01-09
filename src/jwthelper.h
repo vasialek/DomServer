@@ -14,6 +14,7 @@ private:
 public:
     JwtHelper(const char *secret);
     const char *Encode(const char *gameId, const char *userId);
+    const char *Decode(const char *Bearer);
     ~JwtHelper();
 };
 
@@ -32,8 +33,17 @@ const char *JwtHelper::Encode(const char *gameId, const char *userId)
     obj["userId"] = userId;
 
     serializeJson(doc, _jsonBuffer);
-    _jwtEncoder->encodeJWT(_jsonBuffer, _jwtBuffer);
+   // _jwtEncoder->encodeJWT(_jsonBuffer, _jwtBuffer);
+   _jwtEncoder->encodeJWT(_jsonBuffer, _jwtBuffer);
 
+    return _jwtBuffer;
+}
+
+const char *JwtHelper::Decode(const char *Bearer)
+{
+    //_jwtEncoder->decodeJWT(Bearer, sizeof(gameId, userId));
+    _jwtEncoder->decodeJWT((char*)_jwtBuffer, (char*)Bearer, sizeof(_jwtBuffer));
+    
     return _jwtBuffer;
 }
 

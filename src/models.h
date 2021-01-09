@@ -4,6 +4,16 @@
 #include <iostream>
 #include <string.h>
 
+class UserData
+{
+private:
+    char userId[];
+    char gameId[];
+public:
+    UserData();
+    ~UserData();
+};
+
 class UserEntity
 {
 private:
